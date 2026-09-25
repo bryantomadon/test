@@ -1,8 +1,11 @@
-# Image officielle Nginx, variante « non privilégiée » : le serveur ne tourne PAS en root
 FROM nginxinc/nginx-unprivileged:stable-alpine
 
-# On copie le site dans le dossier que Nginx sert par défaut
-COPY src/ /usr/share/nginx/html/
+# Installer les correctifs de sécurité publiés depuis la construction de l'image de base.
+# Il faut être root pour installer des paquets…
+USER root
+RUN apk upgrade --no-cache
+# … puis on redevient immédiatement l'utilisateur non privilégié de l'image (UID 101)
+USER 101
 
-# Un utilisateur non-root ne peut pas écouter sur le port 80 : cette image écoute sur 8080
+COPY src/ /usr/share/nginx/html/
 EXPOSE 8080
