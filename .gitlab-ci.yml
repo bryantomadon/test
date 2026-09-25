@@ -31,14 +31,32 @@ build-image:
 pages:
   stage: deploy
   image: alpine:3
+  needs:
+    - job: trivy-image
+      artifacts: true                # récupère trivy.html
+    - job: dast-zap
+      artifacts: true                # récupère zap.html
   script:
-    - mkdir -p public
+    - mkdir -p public/reports
     - cp -r src/. public/
+    - cp trivy.html zap.html public/reports/
+    - |
+      cat > public/reports/index.html <<HTML
+      <!DOCTYPE html>
+      <html lang="fr"><head><meta charset="utf-8"><title>Rapports de sécurité</title></head>
+      <body>
+        <h1>Rapports de sécurité</h1>
+        <p>Commit ${CI_COMMIT_SHORT_SHA} — pipeline ${CI_PIPELINE_ID}</p>
+        <ul>
+          <li><a href="trivy.html">Scan de l'image (Trivy)</a></li>
+          <li><a href="zap.html">Test dynamique (OWASP ZAP)</a></li>
+        </ul>
+      </body></html>
+      HTML
   artifacts:
     paths:
       - public
   rules:
-    # On ne publie que depuis la branche principale
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
 lint-html:
