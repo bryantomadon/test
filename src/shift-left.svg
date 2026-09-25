@@ -1,12 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 120" role="img" aria-label="Plus un défaut est trouvé tard, plus il coûte cher">
-  <rect width="640" height="120" fill="#fbfaf7"/>
-  <g font-family="system-ui, sans-serif" font-size="14" fill="#2a1a00" text-anchor="middle">
-    <rect x="10" y="40" width="110" height="40" fill="#e1f1f0" stroke="#16797b"/><text x="65" y="65">Code</text>
-    <rect x="135" y="40" width="110" height="40" fill="#e1f1f0" stroke="#16797b"/><text x="190" y="65">Build</text>
-    <rect x="260" y="40" width="110" height="40" fill="#fdf1d6" stroke="#f8b323"/><text x="315" y="65">Test</text>
-    <rect x="385" y="40" width="110" height="40" fill="#fdf1d6" stroke="#f8b323"/><text x="440" y="65">Déploiement</text>
-    <rect x="510" y="40" width="120" height="40" fill="#f8e4e1" stroke="#b8433c"/><text x="570" y="65">Production</text>
-    <text x="65" y="105">€</text><text x="190" y="105">€€</text><text x="315" y="105">€€€</text><text x="440" y="105">€€€€</text><text x="570" y="105">€€€€€</text>
+  <rect width="640" height="120" rx="8" fill="#191d24"/>
+  <line x1="20" y1="60" x2="620" y2="60" stroke="#ffc72c" stroke-width="3" stroke-dasharray="14 10"/>
+  <g font-family="system-ui, sans-serif" font-size="14" fill="#eef0f3" text-anchor="middle">
+    <rect x="10" y="40" width="110" height="40" rx="6" fill="#13301f" stroke="#3ddc97" stroke-width="2"/><text x="65" y="65">Code</text>
+    <rect x="135" y="40" width="110" height="40" rx="6" fill="#13301f" stroke="#3ddc97" stroke-width="2"/><text x="190" y="65">Build</text>
+    <rect x="260" y="40" width="110" height="40" rx="6" fill="#33290c" stroke="#ffc72c" stroke-width="2"/><text x="315" y="65">Test</text>
+    <rect x="385" y="40" width="110" height="40" rx="6" fill="#3a1d19" stroke="#ff7a66" stroke-width="2"/><text x="440" y="65">Déploiement</text>
+    <rect x="510" y="40" width="120" height="40" rx="6" fill="#3a1d19" stroke="#ff7a66" stroke-width="2"/><text x="570" y="65">Production</text>
+    <g fill="#ffc72c" font-weight="bold">
+      <text x="65" y="105">€</text><text x="190" y="105">€€</text><text x="315" y="105">€€€</text><text x="440" y="105">€€€€</text><text x="570" y="105">€€€€€</text>
+    </g>
     <text x="320" y="25" font-weight="bold">Coût de correction d'un défaut selon le moment où on le trouve</text>
   </g>
 </svg>
