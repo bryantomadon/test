@@ -7,5 +7,6 @@ RUN apk upgrade --no-cache
 # … puis on redevient immédiatement l'utilisateur non privilégié de l'image (UID 101)
 USER 101
 
+COPY nginx/default.conf /etc/nginx/conf.d/default.conf
 COPY src/ /usr/share/nginx/html/
 EXPOSE 8080
