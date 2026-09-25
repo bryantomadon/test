@@ -74,11 +74,15 @@ trivy-image:
     key: trivy-db
     paths:
       - .trivycache/                 # la base de vulnérabilités est gardée d'un pipeline à l'autre
-  script:
-    # 1. Tout afficher, pour information
-    - trivy image --severity LOW,MEDIUM,HIGH,CRITICAL "$IMAGE"
-    # 2. Bloquer uniquement sur ce qui est grave ET corrigeable
+    script:
+    # 1. Le rapport complet, au format HTML (ne bloque jamais)
+    - trivy image --format template --template "@/contrib/html.tpl" --output trivy.html "$IMAGE"
+    # 2. La politique de sécurité (bloque si grave et corrigeable)
     - trivy image --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1 "$IMAGE"
+    artifacts:
+      when: always                     # on garde le rapport même si le scan bloque
+      paths:
+        - trivy.html
 
 dast-zap:
   stage: dynamique
