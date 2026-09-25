@@ -1,5 +1,6 @@
 stages:
   - build
+  - test
   - deploy
 
 variables:
@@ -37,3 +38,21 @@ pages:
   rules:
     # On ne publie que depuis la branche principale
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+lint-html:
+  stage: test
+  image: node:22-alpine
+  needs: []                          # démarre tout de suite, sans attendre le build
+  script:
+    - npx --yes htmlhint@1.9.2 "src/**/*.html"
+  allow_failure: true
+
+sast-semgrep:
+  stage: test
+  image: semgrep/semgrep
+  needs: []
+  variables:
+    SEMGREP_SEND_METRICS: "off"
+  script:
+    - semgrep scan --config p/default --error .
+  allow_failure: true
