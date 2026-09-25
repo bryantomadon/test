@@ -1,0 +1,39 @@
+stages:
+  - build
+  - deploy
+
+variables:
+  # Chaque image porte le numéro court du commit : on sait toujours ce qu'elle contient
+  IMAGE: "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA"
+
+build-image:
+  stage: build
+  image: docker:27                   # le client Docker
+  services:
+    - docker:27-dind                 # le moteur Docker, dans un conteneur voisin
+  variables:
+    DOCKER_HOST: "tcp://docker:2376" # où joindre le moteur
+    DOCKER_TLS_CERTDIR: "/certs"     # connexion chiffrée entre client et moteur
+    DOCKER_TLS_VERIFY: "1"
+    DOCKER_CERT_PATH: "/certs/client"
+  before_script:
+    # Le moteur met quelques secondes à démarrer : on l'attend
+    - until docker info > /dev/null 2>&1; do sleep 1; done
+    # Connexion au registre du projet, avec des identifiants fournis par GitLab pour ce job
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
+  script:
+    - docker build -t "$IMAGE" .
+    - docker push "$IMAGE"
+
+pages:
+  stage: deploy
+  image: alpine:3
+  script:
+    - mkdir -p public
+    - cp -r src/. public/
+  artifacts:
+    paths:
+      - public
+  rules:
+    # On ne publie que depuis la branche principale
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
