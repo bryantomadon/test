@@ -2,6 +2,7 @@ stages:
   - build
   - test
   - scan
+  - dynamique
   - deploy
 
 variables:
@@ -78,3 +79,21 @@ trivy-image:
     - trivy image --severity LOW,MEDIUM,HIGH,CRITICAL "$IMAGE"
     # 2. Bloquer uniquement sur ce qui est grave ET corrigeable
     - trivy image --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1 "$IMAGE"
+
+dast-zap:
+  stage: dynamique
+  image: ghcr.io/zaproxy/zaproxy:stable
+  needs: [build-image]
+  services:
+    - name: "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA"   # votre site, construit par ce pipeline
+      alias: site                    # joignable à l'adresse http://site:8080
+  script:
+    - mkdir -p /zap/wrk              # ZAP écrit ses rapports dans ce dossier
+    - zap-baseline.py -t http://site:8080 -r zap.html -I
+  after_script:
+    - cp /zap/wrk/zap.html . || true # on récupère le rapport, même si le scan a échoué
+  artifacts:
+    when: always
+    paths:
+      - zap.html
+  allow_failure: true
