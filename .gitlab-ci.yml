@@ -45,7 +45,7 @@ lint-html:
   needs: []                          # démarre tout de suite, sans attendre le build
   script:
     - npx --yes htmlhint@1.9.2 "src/**/*.html"
-  allow_failure: true
+  allow_failure: false
 
 sast-semgrep:
   stage: test
@@ -55,4 +55,4 @@ sast-semgrep:
     SEMGREP_SEND_METRICS: "off"
   script:
     - semgrep scan --config p/default --error .
-  allow_failure: true
+  allow_failure: false
