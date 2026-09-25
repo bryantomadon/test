@@ -1,6 +1,7 @@
 stages:
   - build
   - test
+  - scan
   - deploy
 
 variables:
@@ -56,3 +57,24 @@ sast-semgrep:
   script:
     - semgrep scan --config p/default --error .
   allow_failure: false
+
+trivy-image:
+  stage: scan
+  image:
+    name: aquasec/trivy:latest
+    entrypoint: [""]                 # on neutralise le point d'entrée de l'image pour lancer nos commandes
+  needs: [build-image]               # on scanne l'image construite par CE pipeline
+  variables:
+    TRIVY_USERNAME: "$CI_REGISTRY_USER"      # Trivy doit pouvoir lire le registre
+    TRIVY_PASSWORD: "$CI_REGISTRY_PASSWORD"
+    TRIVY_NO_PROGRESS: "true"
+    TRIVY_CACHE_DIR: ".trivycache/"
+  cache:
+    key: trivy-db
+    paths:
+      - .trivycache/                 # la base de vulnérabilités est gardée d'un pipeline à l'autre
+  script:
+    # 1. Tout afficher, pour information
+    - trivy image --severity LOW,MEDIUM,HIGH,CRITICAL "$IMAGE"
+    # 2. Bloquer uniquement sur ce qui est grave ET corrigeable
+    - trivy image --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1 "$IMAGE"
